@@ -1,0 +1,10 @@
+#!/usr/bin/env Rscript
+
+
+p = commandArgs(TRUE)
+library(utils)
+library(methods)
+library(knitcitations, quietly=TRUE)
+out <- knitcitations:::ref(p[1])
+print(out)
+

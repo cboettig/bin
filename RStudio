@@ -1,0 +1,30 @@
+#!/bin/bash
+
+PORT=${PORT:=8787}
+
+# Mac/Windows must get this from boot2docker
+IP=${IP:="http://localhost"}
+
+# Pull latest version?  (Allowed to fail, in case of no internet etc)
+docker pull rocker/rstudio || true
+
+# Get the hash for container named rstudio (if it exists)
+CONTAINER=$(docker ps -a | grep "rstudio" | cut -f1 -d" ") 
+
+# If container exists but has exited, restart, 
+# If container doesn't exist, launch new container
+if [ ! -z "$CONTAINER" ]
+then
+    STOPPED=$(docker ps -a --filter "status=exited" | grep "rstudio" | cut -f1 -d" ")
+    if [ ! -z "$STOPPED" ]
+    then
+      docker restart $STOPPED
+    fi
+else
+  echo "Starting new RStudio session"
+  docker run --name rstudio -d -v /home/$USER:/home/rstudio -p $PORT:8787 rocker/hadleyverse
+fi
+
+## open browser at assigned port 
+xdg-open $IP:$PORT &
+

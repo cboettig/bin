@@ -1,0 +1,45 @@
+#!/usr/bin/Rscript
+
+require(methods)
+require(utils)
+require(socialR)
+
+fmt = commandArgs(TRUE)
+
+# Modify a knitted document to post images
+
+
+
+notebook.url <- function(file){
+  sha <- gsub("^commit ", "", system("git log -n 1", intern=TRUE)[1])
+  short_sha <- gsub("(^.{10}).*", "\\1", sha)
+  date <- format(Sys.time(), "%Y-%m-%d")
+  filename <- gsub("figure/(.*\\.png)", "\\1", file)
+  fig.name <- paste(date, "-", short_sha, "-", filename, sep="")
+  system(paste("cp ", file, " ~/Documents/labnotebook/assets/figures/", fig.name, sep=""))
+  url_out <- paste("http://carlboettiger.info/assets/figures/", fig.name, sep="")
+  url_out
+}
+
+
+# Read in the file given at the command line
+a <- readLines(fmt)
+
+# Identify those lines with png images -- assumes they are in figures/
+lines <- grep("figure/.*\\.png", a)
+
+# Extract the local path for those image files
+images <- gsub(".*(figure/.*\\.png).*", "\\1", a[lines])
+
+# upload those images to flickr, recording the urls
+urls <- sapply(images, notebook.url)
+
+# replace the path name with the url
+outlines <- sapply(1:length(urls), function(i)
+ gsub("(^.*)(figure/.*\\.png)(.*$)", paste("\\1", urls[[i]], "\\3", sep=""), a[lines[i]]))
+
+# print output file
+a[lines] <- outlines
+
+
+writeLines(a, fmt)

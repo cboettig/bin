@@ -1,0 +1,5 @@
+#!/bin/bash
+
+python -m SimpleHTTPServer 4000
+#ruby -rwebrick -e 'WEBrick::HTTPServer.new(:Port=>4000,:DocumentRoot=>".").start' &
+
