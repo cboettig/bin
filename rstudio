@@ -6,7 +6,7 @@ PORT=${PORT:=8787}
 IP=${IP:="http://localhost"}
 
 # Pull latest version?  (Allowed to fail, in case of no internet etc)
-docker pull rocker/rstudio || true
+docker pull rocker/hadleyverse || true
 
 # Get the hash for container named rstudio (if it exists)
 CONTAINER=$(docker ps -a | grep "rstudio" | cut -f1 -d" ") 
