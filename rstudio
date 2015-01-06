@@ -22,8 +22,11 @@ then
     fi
 else
   echo "Starting new RStudio session"
-  docker run --name rstudio -d -v /home/$USER:/home/rstudio -p $PORT:8787 rocker/hadleyverse
+	docker run --name rstudio -d -v $(pwd):/home/rstudio -p $PORT:8787 rocker/hadleyverse
 fi
+
+# Give docker some time to load
+sleep 5
 
 ## open browser at assigned port 
 xdg-open $IP:$PORT &

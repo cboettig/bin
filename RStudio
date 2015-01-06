@@ -25,6 +25,9 @@ else
   docker run --name rstudio -d -v /home/$USER:/home/rstudio -p $PORT:8787 rocker/rstudio
 fi
 
+## Give docker some time to load
+sleep 5
+
 ## open browser at assigned port 
 xdg-open $IP:$PORT &
 
