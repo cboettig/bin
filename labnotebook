@@ -3,11 +3,12 @@
 # Stop on errors
 set -e
 
-PORT=${PORT:=8787}
+R_PORT=${R_PORT:=8787}
+JEKYLL_PORT=${JEKYLL_PORT:=4000}
 # Mac/Windows must get this from boot2docker
 IP=${IP:="http://localhost"}
 # Get the hash for container named rstudio (if it exists)
-CONTAINER=$(docker ps -a | grep "rstudio" | cut -f1 -d" ") 
+CONTAINER=$(docker ps -a | grep "labnotebook" | cut -f1 -d" ") 
 
 # If container exists but has exited, restart, 
 # If container doesn't exist, launch new container
@@ -20,14 +21,18 @@ then
     fi
 else
   echo "Starting new RStudio session"
+	REPO=`date +%Y`
 # Pull latest version (Allowed to fail, in case of no internet etc)
-	docker pull rocker/hadleyverse || true
-	docker run --name rstudio -d -v $(pwd):/home/rstudio/`basename $PWD` -p $PORT:8787 rocker/hadleyverse
+	docker pull cboettig/labnotebook || true
+	docker run --name labnotebook -d \
+	  -v /home/cboettig/Documents/lab-notebook/$REPO:/home/rstudio/$REPO \
+		-p $R_PORT:8787 -p $JEKYLL_PORT:4000 \
+		-u 0 cboettig/labnotebook supervisord
 fi
 
 # Give docker some time to load
 sleep 5
 
 ## open browser at assigned port 
-xdg-open $IP:$PORT &
+xdg-open $IP:$R_PORT &
 
